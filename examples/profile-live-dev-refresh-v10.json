@@ -1,0 +1,26 @@
+{
+  "version": "1",
+  "target_profile": "self",
+  "pipeline": {
+    "strict_mode": true,
+    "auto_audit": true,
+    "auto_commit": false
+  },
+  "operations": [
+    {
+      "op": "set_headline",
+      "value": "Software Developer | Web Apps, Automation & Internal Tools | Next.js, TypeScript, Python",
+      "idempotency_key": "dev-refresh-headline-20260410-v10"
+    },
+    {
+      "op": "set_about",
+      "value": "Software developer focused on web applications, workflow automation, and internal tools. Built production websites and account/notification flows with Next.js, React, TypeScript, Prisma, and Python CLI scripts. Background in high-volume hospitality operations in Portugal and the Netherlands, bringing execution, communication, and reliability under pressure.",
+      "idempotency_key": "dev-refresh-about-20260410-v10"
+    },
+    {
+      "op": "set_cover_photo",
+      "file": "assets/linkedin-cover-black-dev-v2.jpg",
+      "idempotency_key": "dev-refresh-cover-20260410-v10"
+    }
+  ]
+}

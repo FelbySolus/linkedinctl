@@ -1,0 +1,16 @@
+{
+  "version": "1",
+  "target_profile": "self",
+  "pipeline": {
+    "strict_mode": true,
+    "auto_audit": true,
+    "auto_commit": false
+  },
+  "operations": [
+    {
+      "op": "set_cover_photo",
+      "file": "assets/linkedin-cover-black-dev-v2.jpg",
+      "idempotency_key": "dev-refresh-cover-REPLACE_WITH_TIMESTAMP"
+    }
+  ]
+}

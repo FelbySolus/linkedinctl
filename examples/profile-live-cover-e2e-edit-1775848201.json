@@ -1,0 +1,16 @@
+{
+  "version": "1",
+  "target_profile": "self",
+  "pipeline": {
+    "strict_mode": true,
+    "auto_audit": true,
+    "auto_commit": true
+  },
+  "operations": [
+    {
+      "op": "set_cover_photo",
+      "file": "assets/linkedin-cover-controlled-v1.jpg",
+      "idempotency_key": "cover-e2e-edit-20260410-1"
+    }
+  ]
+}

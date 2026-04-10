@@ -1,0 +1,33 @@
+{
+  "version": "1",
+  "target_profile": "self",
+  "operations": [
+    {
+      "op": "set_headline",
+      "value": "Automation Engineer | Growth Systems",
+      "idempotency_key": "headline-20260410"
+    },
+    {
+      "op": "set_about",
+      "value": "I build reliable automation systems that connect operations, growth, and product execution.",
+      "idempotency_key": "about-20260410"
+    },
+    {
+      "op": "add_skill",
+      "name": "Python",
+      "idempotency_key": "skill-python"
+    },
+    {
+      "op": "add_experience",
+      "experience": {
+        "id": "exp-automation-lead",
+        "title": "Automation Lead",
+        "company": "Independent",
+        "start": "2025-01",
+        "end": "",
+        "description": "Built operator-facing automation tooling for ecommerce and growth ops."
+      },
+      "idempotency_key": "exp-automation-lead"
+    }
+  ]
+}

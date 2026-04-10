@@ -1,0 +1,29 @@
+{
+  "name": "linkedinctl-browser",
+  "version": "0.0.1",
+  "description": "Core library and CLI for JSON-driven LinkedIn profile automation.",
+  "main": "index.js",
+  "directories": {
+    "example": "examples"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.browser.json",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "browser:runner": "node browser/dist/main.js",
+    "browser:cover-probe": "node browser/dist/tools/cover-probe.js",
+    "linkedinctl": "python3 -m linkedinctl.cli"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "private": true,
+  "dependencies": {
+    "patchright": "^1.59.4",
+    "playwright": "^1.59.1"
+  },
+  "devDependencies": {
+    "@types/node": "^24.6.1",
+    "typescript": "^5.9.3"
+  }
+}

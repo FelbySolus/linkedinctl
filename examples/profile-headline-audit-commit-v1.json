@@ -1,0 +1,11 @@
+{
+  "version": "1",
+  "target_profile": "self",
+  "operations": [
+    {
+      "op": "set_headline",
+      "value": "Desenvolvedor de Software | Next.js, TypeScript e Python | Automação e Ferramentas Internas",
+      "idempotency_key": "pipeline-commit-test-20260410-v1"
+    }
+  ]
+}

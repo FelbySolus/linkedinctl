@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+workspace_root="$(cd "$script_dir/.." && pwd)"
+python_bin="${PYTHON_BIN:-$(command -v python3)}"
+
+export PYTHONPATH="$workspace_root/src${PYTHONPATH:+:$PYTHONPATH}"
+cd "$workspace_root"
+exec "$python_bin" -m linkedinctl.cli --workspace-root "$workspace_root" "$@"

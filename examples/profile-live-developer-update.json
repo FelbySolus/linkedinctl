@@ -1,0 +1,16 @@
+{
+  "version": "1",
+  "target_profile": "self",
+  "operations": [
+    {
+      "op": "set_headline",
+      "value": "Desenvolvedor de Software | Next.js, TypeScript e Python | Automação e Ferramentas Internas",
+      "idempotency_key": "dev-headline-20260410-v1"
+    },
+    {
+      "op": "set_about",
+      "value": "Desenvolvedor focado em aplicações web, automação de fluxos de trabalho e ferramentas internas. Tenho experiência prática com Next.js, React, TypeScript, Python e CLI em projetos em produção e automações independentes. Venho de operações de hospitalidade de alto volume, trazendo execução sob pressão, coordenação e foco em confiabilidade.",
+      "idempotency_key": "dev-about-20260410-v1"
+    }
+  ]
+}

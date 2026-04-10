@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+DIST="$ROOT/browser/dist/tools/cover-probe.js"
+
+if [[ ! -f "$DIST" ]]; then
+  (cd "$ROOT" && npm run build >/dev/null)
+fi
+
+exec node "$DIST" --workspace-root "$ROOT" "$@"

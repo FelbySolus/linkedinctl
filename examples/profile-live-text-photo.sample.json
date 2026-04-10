@@ -1,0 +1,21 @@
+{
+  "version": "1",
+  "target_profile": "self",
+  "operations": [
+    {
+      "op": "set_headline",
+      "value": "Automation Engineer | Operator Systems",
+      "idempotency_key": "headline-live-20260410"
+    },
+    {
+      "op": "set_about",
+      "value": "I design and ship automation systems that make execution reliable across ops, growth, and product.",
+      "idempotency_key": "about-live-20260410"
+    },
+    {
+      "op": "set_profile_photo",
+      "file": "examples/assets/profile-photo.sample.jpg",
+      "idempotency_key": "photo-live-20260410"
+    }
+  ]
+}
