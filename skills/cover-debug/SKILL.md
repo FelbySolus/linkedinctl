@@ -14,6 +14,7 @@ Use this when the LinkedIn cover flow is flaky and you need hard evidence from C
 scripts/linkedinctl-cover-probe \
   --cover-file /absolute/path/to/cover.jpg \
   --profile-url "https://www.linkedin.com/in/<slug>/?isSelfProfile=true" \
+  --user-data-dir ~/.linkedinctl/browser-profile \
   --headless
 ```
 

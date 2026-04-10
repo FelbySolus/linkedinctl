@@ -45,7 +45,7 @@ Useful options:
 - `--headless` / `--headed`
 - `--keep-run-artifacts` (default is auto-purge)
 - `--target-profile-url "https://www.linkedin.com/in/<your-slug>/"`
-- `--user-data-dir state/browser-profile`
+- `--user-data-dir ~/.linkedinctl/browser-profile` (default; outside repo)
 - `--timeout-ms 45000`
 
 ## Debuggability

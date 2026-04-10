@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import fs from 'node:fs/promises';
+import os from 'node:os';
 import path from 'node:path';
 
 import { chromium } from 'patchright';
@@ -53,6 +54,7 @@ function parseArgs(argv: string[]) {
     headless: true,
     coverFile: '',
     profileUrl: 'https://www.linkedin.com/in/me/?isSelfProfile=true',
+    userDataDir: path.join(os.homedir(), '.linkedinctl', 'browser-profile'),
   };
 
   for (let i = 2; i < argv.length; i += 1) {
@@ -64,6 +66,11 @@ function parseArgs(argv: string[]) {
     }
     if (token === '--cover-file') {
       options.coverFile = String(argv[i + 1] || '');
+      i += 1;
+      continue;
+    }
+    if (token === '--user-data-dir') {
+      options.userDataDir = String(argv[i + 1] || options.userDataDir);
       i += 1;
       continue;
     }
@@ -94,7 +101,7 @@ async function main() {
   const args = parseArgs(process.argv);
   const workspaceRoot = path.resolve(args.workspaceRoot);
   const stateDir = path.join(workspaceRoot, 'state');
-  const userDataDir = path.join(stateDir, 'browser-profile');
+  const userDataDir = path.resolve(args.userDataDir);
   const runId = `cover-probe-${new Date().toISOString().replace(/[:.]/g, '-')}`;
   const runDir = path.join(stateDir, 'debug', 'cover-probe', runId);
 

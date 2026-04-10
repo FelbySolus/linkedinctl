@@ -9,6 +9,7 @@ from .adapters import PatchwrightAdapter, PatchwrightConfig
 from .contracts import validate_spec
 from .errors import AdapterExecutionError, PipelineGuardError, SpecValidationError
 from .gitops import safe_auto_commit
+from .runtime_paths import DEFAULT_USER_DATA_DIR
 from .store import ProfileStateStore
 from .types import JsonDict
 
@@ -32,7 +33,7 @@ class LinkedInProfileEngine:
         headless: bool = True,
         timeout_ms: int = 30000,
         retain_run_artifacts: bool = False,
-        user_data_dir: str = "state/browser-profile",
+        user_data_dir: str = DEFAULT_USER_DATA_DIR,
         target_profile_url: str = "",
         locale: str = "en-US",
         node_bin: str = "node",
@@ -76,7 +77,7 @@ class LinkedInProfileEngine:
         headless: bool = False,
         timeout_ms: int = 30000,
         retain_run_artifacts: bool = False,
-        user_data_dir: str = "state/browser-profile",
+        user_data_dir: str = DEFAULT_USER_DATA_DIR,
         target_profile_url: str = "",
         locale: str = "en-US",
         node_bin: str = "node",
@@ -103,7 +104,7 @@ class LinkedInProfileEngine:
         headless: bool = True,
         timeout_ms: int = 30000,
         retain_run_artifacts: bool = False,
-        user_data_dir: str = "state/browser-profile",
+        user_data_dir: str = DEFAULT_USER_DATA_DIR,
         target_profile_url: str = "",
         locale: str = "en-US",
         node_bin: str = "node",
@@ -174,7 +175,7 @@ class LinkedInProfileEngine:
         headless: bool = True,
         timeout_ms: int = 30000,
         retain_run_artifacts: bool = False,
-        user_data_dir: str = "state/browser-profile",
+        user_data_dir: str = DEFAULT_USER_DATA_DIR,
         target_profile_url: str = "",
         locale: str = "en-US",
         node_bin: str = "node",
@@ -322,7 +323,7 @@ class LinkedInProfileEngine:
         headless: bool = True,
         timeout_ms: int = 30000,
         retain_run_artifacts: bool = False,
-        user_data_dir: str = "state/browser-profile",
+        user_data_dir: str = DEFAULT_USER_DATA_DIR,
         target_profile_url: str = "",
         locale: str = "en-US",
         node_bin: str = "node",

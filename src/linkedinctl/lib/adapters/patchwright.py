@@ -7,6 +7,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from ..errors import AdapterExecutionError
+from ..runtime_paths import DEFAULT_USER_DATA_DIR
 from ..types import JsonDict
 
 
@@ -16,7 +17,7 @@ class PatchwrightConfig:
     headless: bool = True
     timeout_ms: int = 30000
     retain_run_artifacts: bool = False
-    user_data_dir: str = "state/browser-profile"
+    user_data_dir: str = DEFAULT_USER_DATA_DIR
     target_profile_url: str = ""
     locale: str = "en-US"
     node_bin: str = "node"

@@ -14,6 +14,7 @@ from .lib.banner_render import (
 )
 from .lib.engine import LinkedInProfileEngine
 from .lib.errors import LinkedInCtlError
+from .lib.runtime_paths import DEFAULT_USER_DATA_DIR, resolve_user_data_dir
 from .lib.types import JsonDict
 
 
@@ -43,7 +44,7 @@ def _add_browser_args(parser: argparse.ArgumentParser, *, include_live: bool, de
     parser.set_defaults(retain_run_artifacts=False)
 
     parser.add_argument("--timeout-ms", type=int, default=30000)
-    parser.add_argument("--user-data-dir", default="state/browser-profile")
+    parser.add_argument("--user-data-dir", default=DEFAULT_USER_DATA_DIR)
     parser.add_argument("--target-profile-url", default="")
     parser.add_argument("--locale", default="en-US")
     parser.add_argument("--node-bin", default="node")
@@ -55,7 +56,7 @@ def _browser_kwargs(args: argparse.Namespace) -> JsonDict:
         "headless": bool(args.headless),
         "timeout_ms": int(args.timeout_ms),
         "retain_run_artifacts": bool(args.retain_run_artifacts),
-        "user_data_dir": str(args.user_data_dir),
+        "user_data_dir": resolve_user_data_dir(str(args.user_data_dir)),
         "target_profile_url": str(args.target_profile_url),
         "locale": str(args.locale),
         "node_bin": str(args.node_bin),

@@ -1,3 +1,4 @@
+import os from 'node:os';
 import path from 'node:path';
 
 import { resolveMaybeRelative } from './io.js';
@@ -11,7 +12,8 @@ export function buildRuntimeConfig(payload: RuntimePayload): RuntimeConfig {
 
   const stateDir = path.resolve(workspaceRoot, 'state');
   const runRoot = path.resolve(stateDir, 'runs');
-  const userDataDir = resolveMaybeRelative(workspaceRoot, payload.user_data_dir ?? path.join('state', 'browser-profile'));
+  const defaultUserDataDir = path.join(os.homedir(), '.linkedinctl', 'browser-profile');
+  const userDataDir = resolveMaybeRelative(workspaceRoot, payload.user_data_dir ?? defaultUserDataDir);
 
   return {
     workspaceRoot,
