@@ -1,6 +1,12 @@
 import { setAbout, setHeadline } from '../actions/text.js';
 import { setProfilePhoto } from '../actions/photo.js';
 import { setCoverPhoto } from '../actions/banner.js';
+import { addSkill, removeSkill } from '../actions/skills.js';
+import {
+  addExperience,
+  removeExperience,
+  updateExperience,
+} from '../actions/experience.js';
 import { RunnerError } from '../core/errors.js';
 import { resolveMaybeRelative } from '../core/io.js';
 import { ensureLoggedIn, withSession } from '../core/session.js';
@@ -69,8 +75,79 @@ export async function runApplyOperation(
       };
     }
 
+    if (operation.op === 'add_skill') {
+      const result = await addSkill(page, runLog, operation.name);
+      return {
+        ok: true,
+        op: operation.op,
+        changed: Boolean(result.changed),
+        details: result,
+      };
+    }
+
+    if (operation.op === 'remove_skill') {
+      const result = await removeSkill(page, runLog, operation.name);
+      return {
+        ok: true,
+        op: operation.op,
+        changed: Boolean(result.changed),
+        details: result,
+      };
+    }
+
+    if (operation.op === 'add_experience') {
+      const result = await addExperience(page, runLog, operation.experience);
+      return {
+        ok: true,
+        op: operation.op,
+        changed: Boolean(result.changed),
+        details: result,
+      };
+    }
+
+    if (operation.op === 'update_experience') {
+      const result = await updateExperience(
+        page,
+        runLog,
+        operation.id,
+        operation.patch,
+        operation.experience,
+      );
+      return {
+        ok: true,
+        op: operation.op,
+        changed: Boolean(result.changed),
+        details: result,
+      };
+    }
+
+    if (operation.op === 'remove_experience') {
+      const result = await removeExperience(
+        page,
+        runLog,
+        operation.id,
+        operation.experience,
+      );
+      return {
+        ok: true,
+        op: operation.op,
+        changed: Boolean(result.changed),
+        details: result,
+      };
+    }
+
     throw new RunnerError('Unsupported live operation payload.', 'unsupported_live_operation', {
-      supported: ['set_headline', 'set_about', 'set_profile_photo', 'set_cover_photo'],
+      supported: [
+        'set_headline',
+        'set_about',
+        'set_profile_photo',
+        'set_cover_photo',
+        'add_skill',
+        'remove_skill',
+        'add_experience',
+        'update_experience',
+        'remove_experience',
+      ],
     });
   });
 }

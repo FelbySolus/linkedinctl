@@ -18,6 +18,11 @@ LIVE_SUPPORTED_OPERATIONS = {
     "set_about",
     "set_profile_photo",
     "set_cover_photo",
+    "add_skill",
+    "remove_skill",
+    "add_experience",
+    "update_experience",
+    "remove_experience",
 }
 
 
@@ -430,10 +435,21 @@ class LinkedInProfileEngine:
             live_result: JsonDict | None = None
             try:
                 if live_adapter is not None and op in LIVE_SUPPORTED_OPERATIONS:
-                    live_result = live_adapter.apply_operation(operation)
+                    live_result = live_adapter.apply_operation(
+                        self._build_live_operation_with_hints(snapshot, operation)
+                    )
 
+                snapshot_before = copy.deepcopy(snapshot)
                 changed, reason = self._apply_operation(snapshot, operation)
-                effective_change = changed or bool((live_result or {}).get("changed"))
+                live_changed = bool((live_result or {}).get("changed")) if live_result is not None else False
+
+                if live_result is not None and changed and not live_changed:
+                    snapshot.clear()
+                    snapshot.update(snapshot_before)
+                    changed = False
+                    reason = f"{reason}_live_unconfirmed"
+
+                effective_change = changed if live_result is None else (changed or live_changed)
                 status = "applied" if effective_change else "skipped"
                 if effective_change and idem and apply_mode:
                     prior_keys.add(idem)
@@ -465,6 +481,31 @@ class LinkedInProfileEngine:
                     }
                 )
         return results
+
+    def _build_live_operation_with_hints(self, snapshot: JsonDict, operation: JsonDict) -> JsonDict:
+        op = str(operation.get("op") or "")
+        payload = dict(operation)
+        if op not in {"update_experience", "remove_experience"}:
+            return payload
+
+        target_id = str(operation.get("id") or "").strip()
+        if not target_id:
+            return payload
+
+        experiences = [row for row in (snapshot.get("experiences") or []) if isinstance(row, dict)]
+        match = next((row for row in experiences if str(row.get("id") or "") == target_id), None)
+        if not match:
+            return payload
+
+        payload["experience"] = {
+            "id": str(match.get("id") or "").strip(),
+            "title": str(match.get("title") or "").strip(),
+            "company": str(match.get("company") or "").strip(),
+            "start": str(match.get("start") or "").strip(),
+            "end": str(match.get("end") or "").strip(),
+            "description": str(match.get("description") or "").strip(),
+        }
+        return payload
 
     def _pipeline_policy(self) -> JsonDict:
         return {
@@ -696,6 +737,32 @@ class LinkedInProfileEngine:
             merged["headline"] = headline
         if about:
             merged["about"] = about
+        skills = live_payload.get("skills")
+        if isinstance(skills, list):
+            normalized_skills = [str(item).strip() for item in skills if str(item).strip()]
+            merged["skills"] = normalized_skills
+
+        experiences = live_payload.get("experiences")
+        if isinstance(experiences, list):
+            normalized_experiences: list[JsonDict] = []
+            for row in experiences:
+                if not isinstance(row, dict):
+                    continue
+                title = str(row.get("title") or "").strip()
+                company = str(row.get("company") or "").strip()
+                if not title or not company:
+                    continue
+                normalized_experiences.append(
+                    {
+                        "id": str(row.get("id") or self._derive_experience_id(row)).strip(),
+                        "title": title,
+                        "company": company,
+                        "start": str(row.get("start") or "").strip(),
+                        "end": str(row.get("end") or "").strip(),
+                        "description": str(row.get("description") or "").strip(),
+                    }
+                )
+            merged["experiences"] = normalized_experiences
         return merged
 
     def _diff_summary(self, before: JsonDict, after: JsonDict) -> JsonDict:

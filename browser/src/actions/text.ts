@@ -83,7 +83,7 @@ async function fillLocatorValue(
   return true;
 }
 
-async function getProfileBaseUrl(page: Page): Promise<string> {
+export async function getProfileBaseUrl(page: Page): Promise<string> {
   const currentUrl = page.url();
   const currentMatch = currentUrl.match(/^https:\/\/www\.linkedin\.com\/in\/[^/?#]+/i);
   if (currentMatch) {

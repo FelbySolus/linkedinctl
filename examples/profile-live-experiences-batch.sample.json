@@ -1,0 +1,35 @@
+{
+  "version": "1",
+  "target_profile": "self",
+  "pipeline": {
+    "strict_mode": true,
+    "auto_audit": true,
+    "auto_commit": false
+  },
+  "operations": [
+    {
+      "op": "add_experience",
+      "experience": {
+        "id": "exp-software-dev-2025",
+        "title": "Software Developer",
+        "company": "Independent",
+        "start": "2025-01",
+        "end": "",
+        "description": "Built internal tools and workflow automations with TypeScript and Python."
+      },
+      "idempotency_key": "exp-add-2025-v1"
+    },
+    {
+      "op": "add_experience",
+      "experience": {
+        "id": "exp-platform-dev-2024",
+        "title": "Platform Developer",
+        "company": "Independent",
+        "start": "2024-01",
+        "end": "2024-12",
+        "description": "Delivered automation CLI pipelines and browser-based profile mutation tooling."
+      },
+      "idempotency_key": "exp-add-2024-v1"
+    }
+  ]
+}

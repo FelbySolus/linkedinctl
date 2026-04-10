@@ -11,7 +11,7 @@ This project is intentionally hardened. Keep it strict and predictable.
   - Python spec contract layer.
   - Browser runtime payload parser (`browser/src/core/protocol.ts`).
 - Keep `idempotency_key` mandatory for every operation.
-- Keep live operation allowlist explicit (`set_headline`, `set_about`, `set_profile_photo`, `set_cover_photo`) unless intentionally expanded end-to-end.
+- Keep live operation allowlist explicit (`set_headline`, `set_about`, `set_profile_photo`, `set_cover_photo`, `add_skill`, `remove_skill`, `add_experience`, `update_experience`, `remove_experience`) unless intentionally expanded end-to-end.
 
 ## Code Hygiene Standards
 

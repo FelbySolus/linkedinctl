@@ -37,6 +37,7 @@ After that, run headless by default:
 scripts/linkedinctl readiness --live --json
 scripts/linkedinctl profile pull --live --json
 scripts/linkedinctl profile apply --live --spec examples/profile-live-text-photo.sample.json --json
+scripts/linkedinctl profile apply --live --spec examples/profile-live-experiences-batch.sample.json --json
 scripts/linkedinctl profile verify --live --json
 ```
 
@@ -47,6 +48,18 @@ Useful options:
 - `--target-profile-url "https://www.linkedin.com/in/<your-slug>/"`
 - `--user-data-dir ~/.linkedinctl/browser-profile` (default; outside repo)
 - `--timeout-ms 45000`
+
+Supported live ops:
+
+- `set_headline`
+- `set_about`
+- `set_profile_photo`
+- `set_cover_photo`
+- `add_skill`
+- `remove_skill`
+- `add_experience`
+- `update_experience`
+- `remove_experience`
 
 ## Debuggability
 
@@ -92,7 +105,7 @@ scripts/linkedinctl assets render-cover \
 - Unknown fields are rejected in both Python spec validation and browser runtime payload parsing.
 - `spec.pipeline.strict_mode` cannot be disabled.
 - Every operation requires `idempotency_key` and duplicate keys are rejected.
-- Live mode blocks unsupported operations (allowed: `set_headline`, `set_about`, `set_profile_photo`, `set_cover_photo`).
+- Live mode blocks unsupported operations (allowed: `set_headline`, `set_about`, `set_profile_photo`, `set_cover_photo`, `add_skill`, `remove_skill`, `add_experience`, `update_experience`, `remove_experience`).
 - `auto_audit` writes immutable audit artifacts in `state/audits/`.
 - `auto_commit` stages only scoped state/audit files and commits safely; apply now fails if commit automation fails.
 

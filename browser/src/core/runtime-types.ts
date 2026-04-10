@@ -20,7 +20,57 @@ export type LivePhotoOperation = {
   idempotency_key?: string;
 };
 
-export type LiveOperation = LiveTextOperation | LivePhotoOperation;
+export type LiveSkillOperation = {
+  op: 'add_skill' | 'remove_skill';
+  name: string;
+  idempotency_key?: string;
+};
+
+export type LiveExperience = {
+  id: string;
+  title: string;
+  company: string;
+  start: string;
+  end: string;
+  description: string;
+};
+
+export type LiveExperiencePatch = {
+  title?: string;
+  company?: string;
+  start?: string;
+  end?: string;
+  description?: string;
+};
+
+export type LiveExperienceAddOperation = {
+  op: 'add_experience';
+  experience: LiveExperience;
+  idempotency_key?: string;
+};
+
+export type LiveExperienceUpdateOperation = {
+  op: 'update_experience';
+  id: string;
+  patch: LiveExperiencePatch;
+  experience?: LiveExperience;
+  idempotency_key?: string;
+};
+
+export type LiveExperienceRemoveOperation = {
+  op: 'remove_experience';
+  id: string;
+  experience?: LiveExperience;
+  idempotency_key?: string;
+};
+
+export type LiveOperation =
+  | LiveTextOperation
+  | LivePhotoOperation
+  | LiveSkillOperation
+  | LiveExperienceAddOperation
+  | LiveExperienceUpdateOperation
+  | LiveExperienceRemoveOperation;
 
 export type RuntimePayload = {
   workspace_root?: string;
@@ -67,6 +117,8 @@ export type PullResult = {
   profile_url: string;
   headline: string;
   about: string;
+  skills?: string[];
+  experiences?: LiveExperience[];
 };
 
 export type LoginSuccessResult = {

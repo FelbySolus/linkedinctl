@@ -3,6 +3,8 @@ import type {
   CommandName,
   JsonObject,
   JsonValue,
+  LiveExperience,
+  LiveExperiencePatch,
   LiveOperation,
   RuntimePayload,
 } from './runtime-types.js';
@@ -90,6 +92,61 @@ function optionalNumber(
   return value;
 }
 
+function parseRequiredString(payload: JsonObject, key: string, context: string): string {
+  const value = optionalString(payload, key) || '';
+  if (!value.trim()) {
+    throw new RunnerError(`${context}.${key} must be non-empty.`, 'invalid_operation_payload', {
+      context,
+      key,
+    });
+  }
+  return value.trim();
+}
+
+function parseExperienceObject(raw: JsonValue | object | null, context: string): LiveExperience {
+  const experience = asObject(raw, context);
+  rejectUnknownKeys(experience, ['id', 'title', 'company', 'start', 'end', 'description'], context);
+
+  const id = optionalString(experience, 'id') || '';
+  const title = parseRequiredString(experience, 'title', context);
+  const company = parseRequiredString(experience, 'company', context);
+  const start = optionalString(experience, 'start') || '';
+  const end = optionalString(experience, 'end') || '';
+  const description = optionalString(experience, 'description') || '';
+
+  return {
+    id: id.trim(),
+    title,
+    company,
+    start: start.trim(),
+    end: end.trim(),
+    description: description.trim(),
+  };
+}
+
+function parseExperiencePatch(raw: JsonValue | object | null, context: string): LiveExperiencePatch {
+  const patch = asObject(raw, context);
+  rejectUnknownKeys(patch, ['title', 'company', 'start', 'end', 'description'], context);
+  if (Object.keys(patch).length === 0) {
+    throw new RunnerError(`${context} must be non-empty.`, 'invalid_operation_payload', { context });
+  }
+
+  const normalized: LiveExperiencePatch = {};
+  for (const key of Object.keys(patch)) {
+    const value = optionalString(patch, key) ?? '';
+    if (
+      key === 'title' ||
+      key === 'company' ||
+      key === 'start' ||
+      key === 'end' ||
+      key === 'description'
+    ) {
+      normalized[key] = value.trim();
+    }
+  }
+  return normalized;
+}
+
 function parseLiveOperation(raw: JsonValue | object | null): LiveOperation {
   const operation = asObject(raw, 'operation');
   const op = optionalString(operation, 'op') || '';
@@ -136,9 +193,76 @@ function parseLiveOperation(raw: JsonValue | object | null): LiveOperation {
       : { op, file: file.trim() };
   }
 
+  if (op === 'add_skill' || op === 'remove_skill') {
+    rejectUnknownKeys(operation, ['op', 'name', 'idempotency_key'], 'operation');
+    const name = parseRequiredString(operation, 'name', 'operation');
+    const idempotencyKey = optionalString(operation, 'idempotency_key');
+    if (idempotencyKey !== undefined && !idempotencyKey.trim()) {
+      throw new RunnerError('operation.idempotency_key cannot be blank.', 'invalid_operation_payload', { op });
+    }
+    return idempotencyKey
+      ? { op, name, idempotency_key: idempotencyKey.trim() }
+      : { op, name };
+  }
+
+  if (op === 'add_experience') {
+    rejectUnknownKeys(operation, ['op', 'experience', 'idempotency_key'], 'operation');
+    const experience = parseExperienceObject(operation.experience, 'operation.experience');
+    const idempotencyKey = optionalString(operation, 'idempotency_key');
+    if (idempotencyKey !== undefined && !idempotencyKey.trim()) {
+      throw new RunnerError('operation.idempotency_key cannot be blank.', 'invalid_operation_payload', { op });
+    }
+    return idempotencyKey
+      ? { op, experience, idempotency_key: idempotencyKey.trim() }
+      : { op, experience };
+  }
+
+  if (op === 'update_experience') {
+    rejectUnknownKeys(operation, ['op', 'id', 'patch', 'experience', 'idempotency_key'], 'operation');
+    const id = parseRequiredString(operation, 'id', 'operation');
+    const patch = parseExperiencePatch(operation.patch, 'operation.patch');
+    const experienceHint =
+      operation.experience === undefined
+        ? undefined
+        : parseExperienceObject(operation.experience, 'operation.experience');
+    const idempotencyKey = optionalString(operation, 'idempotency_key');
+    if (idempotencyKey !== undefined && !idempotencyKey.trim()) {
+      throw new RunnerError('operation.idempotency_key cannot be blank.', 'invalid_operation_payload', { op });
+    }
+    return idempotencyKey
+      ? { op, id, patch, experience: experienceHint, idempotency_key: idempotencyKey.trim() }
+      : { op, id, patch, experience: experienceHint };
+  }
+
+  if (op === 'remove_experience') {
+    rejectUnknownKeys(operation, ['op', 'id', 'experience', 'idempotency_key'], 'operation');
+    const id = parseRequiredString(operation, 'id', 'operation');
+    const experienceHint =
+      operation.experience === undefined
+        ? undefined
+        : parseExperienceObject(operation.experience, 'operation.experience');
+    const idempotencyKey = optionalString(operation, 'idempotency_key');
+    if (idempotencyKey !== undefined && !idempotencyKey.trim()) {
+      throw new RunnerError('operation.idempotency_key cannot be blank.', 'invalid_operation_payload', { op });
+    }
+    return idempotencyKey
+      ? { op, id, experience: experienceHint, idempotency_key: idempotencyKey.trim() }
+      : { op, id, experience: experienceHint };
+  }
+
   throw new RunnerError('operation.op is invalid.', 'invalid_operation_payload', {
     op,
-    allowed: ['set_headline', 'set_about', 'set_profile_photo', 'set_cover_photo'],
+    allowed: [
+      'set_headline',
+      'set_about',
+      'set_profile_photo',
+      'set_cover_photo',
+      'add_skill',
+      'remove_skill',
+      'add_experience',
+      'update_experience',
+      'remove_experience',
+    ],
   });
 }
 
