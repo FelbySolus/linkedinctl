@@ -8,6 +8,7 @@ from pathlib import Path
 from .adapters import PatchwrightAdapter, PatchwrightConfig
 from .contracts import validate_spec
 from .errors import AdapterExecutionError, PipelineGuardError, SpecValidationError
+from .garbage_collector import run_garbage_collection
 from .gitops import safe_auto_commit
 from .runtime_paths import DEFAULT_USER_DATA_DIR
 from .store import ProfileStateStore
@@ -75,6 +76,8 @@ class LinkedInProfileEngine:
                 "reason": "live_adapter_error",
                 "error": str(exc),
             }
+        finally:
+            self._run_gc(user_data_dir=user_data_dir)
 
     def login(
         self,
@@ -99,7 +102,10 @@ class LinkedInProfileEngine:
             node_bin=node_bin,
             npm_bin=npm_bin,
         )
-        return adapter.login(login_wait_ms=login_wait_ms)
+        try:
+            return adapter.login(login_wait_ms=login_wait_ms)
+        finally:
+            self._run_gc(user_data_dir=user_data_dir)
 
     def pull(
         self,
@@ -134,7 +140,10 @@ class LinkedInProfileEngine:
             node_bin=node_bin,
             npm_bin=npm_bin,
         )
-        live_payload = adapter.pull_profile()
+        try:
+            live_payload = adapter.pull_profile()
+        finally:
+            self._run_gc(user_data_dir=user_data_dir)
         snapshot = self._merge_live_snapshot(snapshot, live_payload, target_profile=target_profile)
         self.store.save_snapshot(snapshot)
         return {
@@ -207,13 +216,17 @@ class LinkedInProfileEngine:
             )
 
         prior_keys = self.store.load_applied_idempotency_keys()
-        op_results = self._run_operations(
-            after,
-            normalized_spec["operations"],
-            prior_keys=prior_keys,
-            apply_mode=True,
-            live_adapter=live_adapter,
-        )
+        try:
+            op_results = self._run_operations(
+                after,
+                normalized_spec["operations"],
+                prior_keys=prior_keys,
+                apply_mode=True,
+                live_adapter=live_adapter,
+            )
+        finally:
+            if live:
+                self._run_gc(user_data_dir=user_data_dir)
 
         changed = before != after
         if changed:
@@ -348,7 +361,10 @@ class LinkedInProfileEngine:
                 node_bin=node_bin,
                 npm_bin=npm_bin,
             )
-            live_payload = adapter.pull_profile()
+            try:
+                live_payload = adapter.pull_profile()
+            finally:
+                self._run_gc(user_data_dir=user_data_dir)
             live_probe = {
                 "profile_url": live_payload.get("profile_url"),
                 "headline": live_payload.get("headline"),
@@ -378,6 +394,16 @@ class LinkedInProfileEngine:
         if live_probe is not None:
             payload["live"] = live_probe
         return payload
+
+    def _run_gc(self, *, user_data_dir: str) -> None:
+        try:
+            run_garbage_collection(
+                workspace_root=self.workspace_root,
+                user_data_dir=user_data_dir,
+            )
+        except Exception:
+            # GC is best-effort only and must never break profile operations.
+            return
 
     def _build_adapter(
         self,

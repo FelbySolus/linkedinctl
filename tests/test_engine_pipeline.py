@@ -148,6 +148,26 @@ class EnginePipelineTest(unittest.TestCase):
             self.assertEqual(result["counts"]["failed"], 0)
             self.assertEqual(result["counts"]["applied"], 2)
 
+    def test_login_runs_garbage_collection(self) -> None:
+        class DummyAdapter:
+            def login(self, *, login_wait_ms: int = 300000) -> dict[str, object]:
+                return {
+                    "ok": True,
+                    "authenticated": True,
+                    "profile_hint_url": "https://www.linkedin.com/in/me/",
+                }
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            workspace = Path(temp_dir)
+            engine = LinkedInProfileEngine(workspace_root=str(workspace))
+
+            with patch.object(engine, "_build_adapter", return_value=DummyAdapter()):
+                with patch("linkedinctl.lib.engine.run_garbage_collection") as gc:
+                    result = engine.login(user_data_dir="/tmp/.linkedinctl-profile")
+
+            self.assertTrue(result["ok"])
+            gc.assert_called_once()
+
 
 if __name__ == "__main__":
     unittest.main()

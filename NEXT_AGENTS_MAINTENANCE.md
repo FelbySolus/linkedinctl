@@ -21,6 +21,7 @@ This project is intentionally hardened. Keep it strict and predictable.
 - Reuse shared JSON aliases in `src/linkedinctl/lib/types.py`.
 - Keep run artifacts and state writes deterministic and auditable.
 - Default behavior purges per-run artifacts; retained runs must be opt-in (`--keep-run-artifacts`).
+- Keep post-run GC active: browser-backed commands must clear ephemeral profile caches and prune stale retained run dirs (see `state/gc/events.jsonl`).
 
 Debug skill location:
 

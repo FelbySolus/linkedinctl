@@ -71,6 +71,12 @@ Live runs are always organized under command-specific folders:
 
 Default behavior auto-purges run folders after each command. Use `--keep-run-artifacts` to retain them.
 
+Additionally, every browser-backed run performs a quiet post-run garbage collection pass:
+
+- clears ephemeral Chromium cache folders inside `--user-data-dir` (without touching auth/session cookies)
+- prunes stale retained run folders under `state/runs/`
+- appends GC audit lines to `state/gc/events.jsonl`
+
 Dedicated cover probe tool (keeps artifacts by design):
 
 ```bash
